@@ -1,0 +1,41 @@
+{
+  "name": "bolzer/symfony-typescript-routes",
+  "description": "A service to generate typescript paths from the router of an symfony application",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jan Noehles",
+      "email": "noehles.jan@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Bolzer\\SymfonyTypescriptRoutes\\": ""
+    }
+  },
+  "require": {
+    "php": ">=8.0",
+    "symfony/config": "5.3.x-dev",
+    "symfony/dependency-injection": "5.3.x-dev",
+    "symfony/http-kernel": "5.3.x-dev",
+    "symfony/routing": "5.3.x-dev",
+    "symfony/validator": "^5.3",
+    "symfony/yaml": "5.3.x-dev"
+  }
+  ,
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpspec/prophecy": "~1.0",
+    "phpspec/prophecy-phpunit": "2.0.x-dev",
+    "phpunit/phpunit": "^9.5",
+    "roave/security-advisories": "dev-latest",
+    "vimeo/psalm": "^4.8"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.0"
+    }
+  }
+}

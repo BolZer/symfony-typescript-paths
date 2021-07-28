@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="4"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="Attributes" />
+        <directory name="Commands" />
+        <directory name="Configuration" />
+        <directory name="Contracts" />
+        <directory name="Dto" />
+        <directory name="Services" />
+        <directory name="Traits" />
+        <directory name="bin" />
+        <ignoreFiles>
+            <directory name="Tests" />
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>
