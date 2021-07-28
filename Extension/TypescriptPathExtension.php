@@ -13,7 +13,7 @@ class TypescriptPathExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../services.yml'));
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../'));
         $loader->load('services.yml');
     }
 }
