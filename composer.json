@@ -1,7 +1,7 @@
 {
   "name": "bolzer/symfony-typescript-routes",
   "description": "A service to generate typescript paths from the router of an symfony application",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Jan Noehles",
