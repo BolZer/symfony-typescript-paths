@@ -1,6 +1,7 @@
 # Symfony-Typescript-Routes
 ![maintained](https://img.shields.io/maintenance/yes/2021)
 ![ci](https://travis-ci.com/BolZer/symfony-typescript-routes.svg?branch=master)
+[![codecov](https://codecov.io/gh/BolZer/symfony-typescript-routes/branch/master/graph/badge.svg?token=W7IYQXY2UD)](https://codecov.io/gh/BolZer/symfony-typescript-routes)
 
 ## Description
 
@@ -82,7 +83,7 @@ $.get(path_users_route({"count": "20"}))
 console.log(path_users_route({"count": "20"}))
 ```
 
-### Convention
+## Conventions
 
 * Query and Route Params must be provided as strings to the Typescript Functions
 * All generated path functions in typescript will have a "path_" prefix.
@@ -92,6 +93,12 @@ console.log(path_users_route({"count": "20"}))
 ### Executing Tests
 
 ```shell
-docker build -t php_tests .
-docker run php_tests  
+docker build -t ts-path-tests .
+docker run ts-path-tests
+```
+
+### Test Coverage
+
+```shell
+XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-text
 ```
