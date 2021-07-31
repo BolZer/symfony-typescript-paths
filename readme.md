@@ -29,7 +29,8 @@ return [
 2. Write something to create a path.ts file with the content from the service. Like a Command!
 ```PHP
 use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
-use Symfony\Component\Console\Command\Command;use Symfony\Component\Console\Input\InputInterface;use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Command\Command;use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerationCommand extends Command
 {
