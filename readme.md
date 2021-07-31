@@ -92,6 +92,6 @@ console.log(path_users_route({"count": "20"}))
 ### Executing Tests
 
 ```shell
-docker build -t php_tests .
-docker run php_tests  
+docker build -t ts-path-tests .
+docker run ts-path-tests
 ```
