@@ -74,3 +74,7 @@ fabric.properties
 composer.phar
 .php-cs-fixer.cache
 .typescript-paths-config.php
+.phpunit.result.cache
+vendor
+node_modules/
+.idea/
