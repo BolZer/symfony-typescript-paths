@@ -22,7 +22,7 @@ class GenerateTest extends TestCase
         $routeCollection = new RouteCollection();
         $routeCollection->add('test_route', new Route('/test'));
         $routeCollection->add('user_route', new Route('/user/{id}/{nodeID}'));
-        yield ["output.txt", $routeCollection];
+        yield ['output.txt', $routeCollection];
     }
 
     /** @dataProvider generationServiceDataProvider */

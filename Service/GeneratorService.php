@@ -114,12 +114,12 @@ class GeneratorService
     {
         return 'routeParams: {' . \implode(', ', array_map(
             static function (string $variable) {
-                    if (\str_contains($variable, 'locale')) {
-                        return $variable . ': L';
-                    }
+                if (\str_contains($variable, 'locale')) {
+                    return $variable . ': L';
+                }
 
-                    return $variable . ': string';
-                },
+                return $variable . ': string';
+            },
             $variables
         )) . '}';
     }

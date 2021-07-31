@@ -6,3 +6,9 @@ lint:
 
 test:
 	./vendor/bin/phpunit ./Tests
+
+docker_build:
+	docker build -t php_tests .
+
+docker_tests:
+	docker run php_tests
