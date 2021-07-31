@@ -1,5 +1,6 @@
 # Symfony-Typescript-Routes
-![maintained](https://img.shields.io/maintenance/yes/2021?style=for-the-badge)
+![maintained](https://img.shields.io/maintenance/yes/2021)
+![ci](https://travis-ci.com/BolZer/symfony-typescript-routes.svg?branch=master)
 
 ## Description
 
