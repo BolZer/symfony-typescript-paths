@@ -1,7 +1,10 @@
 language: php
 php:
   - '8.0'
-
+before_install:
+  - curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+  - apt-get install -y nodejs
+  - npm install
 install:
   - composer install
 script: ./vendor/bin/phpunit ./Tests
