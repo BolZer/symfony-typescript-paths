@@ -6,7 +6,8 @@ before_install:
   - npm install
 install:
   - composer install
-script: ./vendor/bin/phpunit ./Tests
-after_success:
+script:
+  - ./vendor/bin/phpunit ./Tests
   - XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
+after_success:
   - bash <(curl -s https://codecov.io/bash)
