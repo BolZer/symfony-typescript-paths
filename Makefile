@@ -8,7 +8,7 @@ test:
 	./vendor/bin/phpunit ./Tests
 
 docker_build:
-	docker build -t php_tests .
+	docker build -t ts-path-tests .
 
 docker_tests:
-	docker run php_tests
+	docker run ts-path-tests

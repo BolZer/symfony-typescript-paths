@@ -1,0 +1,9 @@
+{
+  "include": [
+    "Tests/**/*"
+  ],
+  "compilerOptions": {
+    "lib": ["ES2017", "DOM"],
+    "noEmit": true
+  }
+}

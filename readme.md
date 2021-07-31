@@ -16,8 +16,8 @@ composer require bolzer/symfony-typescript-routes
 
 1. Registering the Extension
 ```PHP
-<?php
 // bundles.php
+<?php
 
 return [
     Bolzer\SymfonyTypescriptRoutes\Bundle\TypescriptPathBundle::class => ['all' => true],
@@ -28,6 +28,9 @@ return [
 
 2. Write something to create a path.ts file with the content from the service. Like a Command!
 ```PHP
+// some_command.php
+<?php
+
 use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -83,3 +86,11 @@ console.log(path_users_route({"count": "20"}))
 * Query and Route Params must be provided as strings to the Typescript Functions
 * All generated path functions in typescript will have a "path_" prefix.
 * Currently only relative routes are supported
+
+
+### Executing Tests
+
+```shell
+docker build -t php_tests .
+docker run php_tests  
+```

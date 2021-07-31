@@ -22,7 +22,7 @@ class GenerateTest extends TestCase
         $routeCollection = new RouteCollection();
         $routeCollection->add('test_route', new Route('/test'));
         $routeCollection->add('user_route', new Route('/user/{id}/{nodeID}'));
-        yield ['output.txt', $routeCollection];
+        yield ['output.ts', $routeCollection];
     }
 
     /** @dataProvider generationServiceDataProvider */
@@ -41,6 +41,18 @@ class GenerateTest extends TestCase
             $file,
             $result
         );
+    }
+
+    /** @depends testGenerationService */
+    public function testTSCCompilationOfOutput(): void
+    {
+        $output = null;
+        $code = null;
+
+        exec(__DIR__ . '/../node_modules/.bin/tsc', $output, $code);
+
+        static::assertSame(0, $code);
+        static::assertEmpty($output);
     }
 
     private function getMockedRouter(RouteCollection $collection): RouterInterface
