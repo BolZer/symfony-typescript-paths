@@ -8,7 +8,7 @@ test:
 	./vendor/bin/phpunit ./Tests
 
 coverage:
-	XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-text
+	XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html
 
 docker_build:
 	docker build -t ts-path-tests .
