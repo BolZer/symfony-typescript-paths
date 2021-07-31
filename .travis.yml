@@ -1,14 +1,8 @@
-jobs:
-  include:
-    - language: node_js
-      node_js:
-        - '16.0'
-      install:
-        - npm install
-
-    - language: php
-      php:
-        - '8.0'
-      install:
-        - composer install
-      script: ./vendor/bin/phpunit ./Tests
+language: php
+php:
+  - '8.0'
+before_install:
+  - nvm install 16
+install:
+  - composer install
+script: ./vendor/bin/phpunit ./Tests
