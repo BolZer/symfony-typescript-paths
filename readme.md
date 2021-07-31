@@ -82,7 +82,7 @@ $.get(path_users_route({"count": "20"}))
 console.log(path_users_route({"count": "20"}))
 ```
 
-### Convention
+## Conventions
 
 * Query and Route Params must be provided as strings to the Typescript Functions
 * All generated path functions in typescript will have a "path_" prefix.
@@ -94,4 +94,10 @@ console.log(path_users_route({"count": "20"}))
 ```shell
 docker build -t ts-path-tests .
 docker run ts-path-tests
+```
+
+### Test Coverage
+
+```shell
+XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-text
 ```
