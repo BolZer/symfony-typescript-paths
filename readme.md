@@ -5,8 +5,9 @@
 
 ## Description
 
-This Extension for Symfony provides a Generation Service which can be used - after registering the provided extension -
-in your code to generate typescript code from the application route.
+This Extension for the symfony framework provides a Generator which can be used - after registering the provided extension in your symfony application -
+in your code to generate typescript code from the application routes. These generated routes can be used in your typescript code to reference the symfony
+application routes.
 
 ## Installation
 
@@ -73,7 +74,7 @@ export const path_users_route = (queryParams?: Record<string, string>): string =
 And can be used like this
 
 ```Typescript
-//paths.ts
+//example.ts
 import * as $ from "jquery";
 import {path_users_route} from "./paths";
 
