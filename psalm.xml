@@ -7,14 +7,9 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 >
     <projectFiles>
-        <directory name="Attributes" />
-        <directory name="Commands" />
-        <directory name="Configuration" />
-        <directory name="Contracts" />
-        <directory name="Dto" />
-        <directory name="Services" />
-        <directory name="Traits" />
-        <directory name="bin" />
+        <directory name="Bundle" />
+        <directory name="Extension" />
+        <directory name="Service" />
         <ignoreFiles>
             <directory name="Tests" />
             <directory name="vendor" />

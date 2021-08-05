@@ -20,8 +20,8 @@ class GenerateTest extends TestCase
     public function generationServiceDataProvider(): \Generator
     {
         $routeCollection = new RouteCollection();
-        $routeCollection->add('test_route', new Route('/test'));
-        $routeCollection->add('user_route', new Route('/user/{id}/{nodeID}'));
+        $routeCollection->add('user_route', new Route('/user/{Id}/notes/{noteId}', host: 'app.development.org', schemes: 'https'));
+        $routeCollection->add('users_route', new Route('/users', host: 'app.development.org', schemes: 'https'));
         yield ['output.ts', $routeCollection];
     }
 
