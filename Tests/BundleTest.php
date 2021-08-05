@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Bolzer\SymfonyTypescriptRoutes\Tests;
+
 use Bolzer\SymfonyTypescriptRoutes\Bundle\TypescriptPathBundle;
 use Bolzer\SymfonyTypescriptRoutes\Extension\TypescriptPathExtension;
 use PHPUnit\Framework\TestCase;

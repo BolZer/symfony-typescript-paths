@@ -63,7 +63,6 @@ The Output may look something like this
 
 ```Typescript
 //paths.ts
-type L = 'de'|'en'
 const rRP = (rawRoute: string, routeParams: Record<string, string>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value)); return rawRoute;}
 const aQP = (route: string, queryParams?: Record<string, string>): string => queryParams ? route + "?" + new URLSearchParams(queryParams).toString() : route;
 export const path_user_route = (routeParams: {id: string, nodeID: string}, queryParams?: Record<string, string>): string => aQP(rRP('/user/{id}/{nodeID}', routeParams), queryParams);
@@ -78,18 +77,19 @@ And can be used like this
 import * as $ from "jquery";
 import {path_users_route} from "./paths";
 
-$.get(path_users_route({"count": "20"}))
+$.get(path_users_route().relative({"count": "20"}))
 
 // Outputs: /users?count=20
-console.log(path_users_route({"count": "20"}))
+console.log(path_users_route().relative(({"count": "20"})))
+
+// Outputs: https://example.host.org/users?count=20
+console.log(path_users_route().absolute(({"count": "20"})))
 ```
 
 ## Conventions
 
 * Query and Route Params must be provided as strings to the Typescript Functions
 * All generated path functions in typescript will have a "path_" prefix.
-* Currently only relative routes are supported
-
 
 ### Executing Tests
 

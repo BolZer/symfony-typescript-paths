@@ -19,4 +19,4 @@ RUN ./composer.phar install
 # Node Depenencies
 RUN npm install
 
-ENTRYPOINT ./vendor/bin/phpunit ./Tests
+ENTRYPOINT ./vendor/bin/phpunit ./Tests && npm run test

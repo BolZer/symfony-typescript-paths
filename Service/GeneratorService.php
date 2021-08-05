@@ -9,8 +9,6 @@ use Symfony\Component\Routing\RouterInterface;
 
 class GeneratorService
 {
-    private const LOCALES = ['de', 'en'];
-
     public function __construct(
         private RouterInterface $router,
     ) {
@@ -19,7 +17,7 @@ class GeneratorService
     public function generate(): array
     {
         $buffer = [
-            ...$this->getTypescriptUtilityFunctions(),
+            ...\array_values($this->getTypescriptUtilityFunctions()),
         ];
 
         foreach ($this->router->getRouteCollection()->all() as $name => $route) {
@@ -32,7 +30,6 @@ class GeneratorService
     private function getTypescriptUtilityFunctions(): array
     {
         return [
-            'type L = ' . implode('|', array_map(static fn (string $v): string => "'{$v}'", self::LOCALES)),
             'const rRP = (rawRoute: string, routeParams: Record<string, string>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value)); return rawRoute;}',
             'const aQP = (route: string, queryParams?: Record<string, string>): string => queryParams ? route + "?" + new URLSearchParams(queryParams).toString() : route;',
         ];
@@ -40,36 +37,33 @@ class GeneratorService
 
     private function buildFunctionForRoute(string $routeName, Route $route): string
     {
-        if ($variables = $this->retrieveVariablesFromRoutePath($route)) {
-            $buffer = [
-                'export const ',
-                $this->sanitizeRouteFunctionName($routeName),
-                ' = (',
-                $this->createRouteParamFunctionArgument($variables),
-                ', ',
-                $this->createQueryParamFunctionArgument(),
-                '): string => ',
-                'aQP(',
-                "rRP('",
-                $route->getPath(),
-                "', routeParams",
-                '), queryParams',
-                ');',
-            ];
-
-            return \implode('', $buffer);
-        }
+        $relativeRouteVariables = $this->retrieveVariablesFromRoutePath($route);
+        $absoluteRouteVariables = $this->retrieveVariablesFromAbsoluteRoutePath($route);
 
         $buffer = [
             'export const ',
             $this->sanitizeRouteFunctionName($routeName),
-            ' = (',
+            ' = ():',
+            '{ relative: (',
+            $this->createRouteParamFunctionArgument($relativeRouteVariables),
             $this->createQueryParamFunctionArgument(),
-            '): string => ',
-            "aQP('",
-            $route->getPath(),
-            "', queryParams",
-            ');',
+            ') => string, ',
+            'absolute: (',
+            $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+            $this->createQueryParamFunctionArgument(),
+            ') => string',
+            '} => {',
+            'return {',
+            'relative: (',
+            $this->createRouteParamFunctionArgument($relativeRouteVariables),
+            $this->createQueryParamFunctionArgument(),
+            '): string => ' . $this->createFunctionCallForRelativePath($route, $relativeRouteVariables) . ', ',
+            'absolute: (',
+            $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+            $this->createQueryParamFunctionArgument(),
+            '): string => ' . $this->createFunctionCallForAbsolutePath($route, $absoluteRouteVariables),
+            '}',
+            '};',
         ];
 
         return \implode('', $buffer);
@@ -82,6 +76,32 @@ class GeneratorService
         preg_match_all(
             '/{(.*?)}/m',
             $route->getPath(),
+            $matches,
+            PREG_SET_ORDER,
+            0
+        );
+
+        if (!$matches) {
+            return [];
+        }
+
+        $buffer = [];
+        foreach ($matches as $match) {
+            $buffer[] = $match[1];
+        }
+
+        return $buffer;
+    }
+
+    private function retrieveVariablesFromAbsoluteRoutePath(Route $route): array
+    {
+        $url = \sprintf('%s%s', $route->getHost(), $route->getPath());
+
+        $matches = [];
+
+        preg_match_all(
+            '/{(.*?)}/m',
+            $url,
             $matches,
             PREG_SET_ORDER,
             0
@@ -112,20 +132,64 @@ class GeneratorService
 
     private function createRouteParamFunctionArgument(array $variables): string
     {
+        if (!$variables) {
+            return '';
+        }
+
         return 'routeParams: {' . \implode(', ', array_map(
             static function (string $variable) {
-                if (\str_contains($variable, 'locale')) {
-                    return $variable . ': L';
-                }
-
                 return $variable . ': string';
             },
             $variables
-        )) . '}';
+        )) . '}, ';
     }
 
     private function createQueryParamFunctionArgument(): string
     {
         return 'queryParams?: Record<string, string>';
+    }
+
+    private function createFunctionCallForRelativePath(Route $route, array $variables): string
+    {
+        if ($variables) {
+            return \implode('', [
+                'aQP(',
+                "rRP('",
+                $route->getPath(),
+                "', routeParams",
+                '), queryParams',
+                ')',
+            ]);
+        }
+
+        return \implode('', [
+            "aQP('",
+            $route->getPath(),
+            "', queryParams",
+            ')',
+        ]);
+    }
+
+    private function createFunctionCallForAbsolutePath(Route $route, array $variables): string
+    {
+        $absolutePath = $route->getSchemes()[0] . '://' . $route->getHost() . $route->getPath();
+
+        if ($variables) {
+            return \implode('', [
+                'aQP(',
+                "rRP('",
+                $absolutePath,
+                "', routeParams",
+                '), queryParams',
+                ')',
+            ]);
+        }
+
+        return \implode('', [
+            "aQP('",
+            $absolutePath,
+            "', queryParams",
+            ')',
+        ]);
     }
 }
