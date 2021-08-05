@@ -1,8 +1,12 @@
 {
   "include": [
-    "Tests/**/*"
+    "Tests/**/*.ts"
+  ],
+  "exclude": [
+    "Tests/**/*.test.ts"
   ],
   "compilerOptions": {
+    "esModuleInterop": true,
     "lib": ["ES2017", "DOM"],
     "noEmit": true
   }

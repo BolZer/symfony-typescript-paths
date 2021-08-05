@@ -7,6 +7,9 @@ lint:
 test:
 	./vendor/bin/phpunit ./Tests
 
+test_js:
+	npm run test
+
 coverage:
 	XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html
 
