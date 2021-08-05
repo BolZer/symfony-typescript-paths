@@ -65,9 +65,7 @@ The Output may look something like this
 //paths.ts
 const rRP = (rawRoute: string, routeParams: Record<string, string>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value)); return rawRoute;}
 const aQP = (route: string, queryParams?: Record<string, string>): string => queryParams ? route + "?" + new URLSearchParams(queryParams).toString() : route;
-export const path_user_route = (routeParams: {id: string, nodeID: string}, queryParams?: Record<string, string>): string => aQP(rRP('/user/{id}/{nodeID}', routeParams), queryParams);
-export const path_users_route = (queryParams?: Record<string, string>): string => aQP('/users', queryParams);
-
+export const path_user_route = ():{ relative: (routeParams: {id: string, noteId: string}, queryParams?: Record<string, string>) => string, absolute: (routeParams: {id: string, noteId: string}, queryParams?: Record<string, string>) => string} => {return {relative: (routeParams: {id: string, noteId: string}, queryParams?: Record<string, string>): string => aQP(rRP('/user/{id}/notes/{noteId}', routeParams), queryParams), absolute: (routeParams: {id: string, noteId: string}, queryParams?: Record<string, string>): string => aQP(rRP('https://app.development.org/user/{id}/notes/{noteId}', routeParams), queryParams)}};
 ```
 
 And can be used like this
