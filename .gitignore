@@ -78,3 +78,5 @@ composer.phar
 vendor
 node_modules/
 .idea/
+tests/output.ts
+.phpunit.cache

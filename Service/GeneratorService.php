@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bolzer\SymfonyTypescriptRoutes\Service;
 
+use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -14,8 +15,10 @@ class GeneratorService
     ) {
     }
 
-    public function generate(): array
+    public function generate(GeneratorConfig $config): array
     {
+        $this->assertValidConfiguration($config);
+
         $buffer = [
             ...\array_values($this->getTypescriptUtilityFunctions()),
         ];
@@ -207,5 +210,12 @@ class GeneratorService
             "', queryParams",
             ')',
         ]);
+    }
+
+    private function assertValidConfiguration(GeneratorConfig $config): void
+    {
+        if (!$config->isGenerateAbsoluteUrls() && !$config->isGenerateRelativeUrls()) {
+            throw new \InvalidArgumentException('Configuration invalid. You should not set generateAbsoluteUrls and generateRelativeUrls to false.');
+        }
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bolzer\SymfonyTypescriptRoutes\Tests;
 
+use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
 use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -32,7 +33,7 @@ class GenerateTest extends TestCase
         $file = __DIR__ . '/' . $outputFileName;
 
         $service = new GeneratorService($this->getMockedRouter($collection));
-        $result = implode("\n", $service->generate());
+        $result = implode("\n", $service->generate(GeneratorConfig::generateEverything()));
 
         if (self::UPDATE_OUTPUT_FILES) {
             \file_put_contents($file, $result);
@@ -52,7 +53,7 @@ class GenerateTest extends TestCase
         $routeCollection = new RouteCollection();
         $routeCollection->add('user_route', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org'));
 
-        (new GeneratorService($this->getMockedRouter($routeCollection)))->generate();
+        (new GeneratorService($this->getMockedRouter($routeCollection)))->generate(GeneratorConfig::generateEverything());
     }
 
     /** @depends testGenerationService */
