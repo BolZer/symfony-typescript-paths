@@ -24,18 +24,21 @@ class GenerateTest extends TestCase
         $routeCollection->add('user_route', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org', schemes: 'https'));
         $routeCollection->add('user_route_http', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org', schemes: 'http'));
         $routeCollection->add('users_route', new Route('/users', host: 'app.development.org', schemes: 'https'));
-        yield ['output.ts', $routeCollection];
+
+        yield ['output.ts', $routeCollection, GeneratorConfig::generateEverything()];
+        yield ['output_relative.ts', $routeCollection, GeneratorConfig::generateOnlyRelativeUrls()];
+        yield ['output_absolute.ts', $routeCollection, GeneratorConfig::generateOnlyAbsoluteUrls()];
     }
 
     /** @dataProvider generationServiceDataProvider */
-    public function testGenerationService(string $outputFileName, RouteCollection $collection): void
+    public function testGenerationService(string $outputFileName, RouteCollection $collection, GeneratorConfig $config): void
     {
         $file = __DIR__ . '/' . $outputFileName;
 
         $service = new GeneratorService($this->getMockedRouter($collection));
-        $result = implode("\n", $service->generate(GeneratorConfig::generateEverything()));
+        $result = implode("\n", $service->generate($config));
 
-        if (self::UPDATE_OUTPUT_FILES) {
+        if (true) {
             \file_put_contents($file, $result);
         }
 
