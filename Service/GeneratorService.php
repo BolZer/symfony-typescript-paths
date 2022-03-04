@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bolzer\SymfonyTypescriptRoutes\Service;
 
+use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -14,14 +15,16 @@ class GeneratorService
     ) {
     }
 
-    public function generate(): array
+    public function generate(GeneratorConfig $config): array
     {
+        $this->assertValidConfiguration($config);
+
         $buffer = [
             ...\array_values($this->getTypescriptUtilityFunctions()),
         ];
 
         foreach ($this->router->getRouteCollection()->all() as $name => $route) {
-            $buffer[] = $this->buildFunctionForRoute($name, $route);
+            $buffer[] = $this->buildFunctionForRoute($config, $name, $route);
         }
 
         return $buffer;
@@ -35,7 +38,7 @@ class GeneratorService
         ];
     }
 
-    private function buildFunctionForRoute(string $routeName, Route $route): string
+    private function buildFunctionForRoute(GeneratorConfig $config, string $routeName, Route $route): string
     {
         $relativeRouteVariables = $this->retrieveVariablesFromRoutePath($route);
         $absoluteRouteVariables = $this->retrieveVariablesFromAbsoluteRoutePath($route);
@@ -43,28 +46,54 @@ class GeneratorService
         $buffer = [
             'export const ',
             $this->sanitizeRouteFunctionName($routeName),
-            ' = ():',
-            '{ relative: (',
-            $this->createRouteParamFunctionArgument($relativeRouteVariables),
-            $this->createQueryParamFunctionArgument(),
-            ') => string, ',
-            'absolute: (',
-            $this->createRouteParamFunctionArgument($absoluteRouteVariables),
-            $this->createQueryParamFunctionArgument(),
-            ') => string',
+            ' = (): { ',
+        ];
+
+        if ($config->isGenerateRelativeUrls()) {
+            $buffer = array_merge($buffer, [
+                'relative: (',
+                $this->createRouteParamFunctionArgument($relativeRouteVariables),
+                $this->createQueryParamFunctionArgument(),
+                ') => string, ',
+            ]);
+        }
+
+        if ($config->isGenerateAbsoluteUrls()) {
+            $buffer = array_merge($buffer, [
+                'absolute: (',
+                $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+                $this->createQueryParamFunctionArgument(),
+                ') => string',
+            ]);
+        }
+
+        $buffer = array_merge($buffer, [
             '} => {',
             'return {',
-            'relative: (',
-            $this->createRouteParamFunctionArgument($relativeRouteVariables),
-            $this->createQueryParamFunctionArgument(),
-            '): string => ' . $this->createFunctionCallForRelativePath($route, $relativeRouteVariables) . ', ',
-            'absolute: (',
-            $this->createRouteParamFunctionArgument($absoluteRouteVariables),
-            $this->createQueryParamFunctionArgument(),
-            '): string => ' . $this->createFunctionCallForAbsolutePath($route, $absoluteRouteVariables),
+        ]);
+
+        if ($config->isGenerateRelativeUrls()) {
+            $buffer = array_merge($buffer, [
+                'relative: (',
+                $this->createRouteParamFunctionArgument($relativeRouteVariables),
+                $this->createQueryParamFunctionArgument(),
+                '): string => ' . $this->createFunctionCallForRelativePath($route, $relativeRouteVariables) . ', ',
+            ]);
+        }
+
+        if ($config->isGenerateAbsoluteUrls()) {
+            $buffer = array_merge($buffer, [
+                'absolute: (',
+                $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+                $this->createQueryParamFunctionArgument(),
+                '): string => ' . $this->createFunctionCallForAbsolutePath($route, $absoluteRouteVariables),
+            ]);
+        }
+
+        $buffer = array_merge($buffer, [
             '}',
             '};',
-        ];
+        ]);
 
         return \implode('', $buffer);
     }
@@ -207,5 +236,12 @@ class GeneratorService
             "', queryParams",
             ')',
         ]);
+    }
+
+    private function assertValidConfiguration(GeneratorConfig $config): void
+    {
+        if (!$config->isGenerateAbsoluteUrls() && !$config->isGenerateRelativeUrls()) {
+            throw new \InvalidArgumentException('Configuration invalid. You should not set generateAbsoluteUrls and generateRelativeUrls to false.');
+        }
     }
 }

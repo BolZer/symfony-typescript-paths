@@ -38,6 +38,7 @@ use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
 
 class GenerationCommand extends Command
 {
@@ -52,7 +53,16 @@ class GenerationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-       file_put_contents(__DIR__ . '../../../paths.ts', implode("\n", $this->generatorService->generate()));
+       // Typescript routes containing relative and absolute urls.
+       $routes = $this->generatorService->generate(GeneratorConfig::generateEverything());
+       
+       // Typescript routes containing absolute urls.
+       $routes = $this->generatorService->generate(GeneratorConfig::generateOnlyAbsoluteUrls());
+       
+       // Typescript routes containing absolute urls.
+       $routes = $this->generatorService->generate(GeneratorConfig::generateOnlyRelativeUrls());
+    
+       file_put_contents(__DIR__ . '../../../paths.ts', implode("\n", $routes));
        $output->writeln('<comment>Generation of paths done.</comment>');
        return 1;
     }
