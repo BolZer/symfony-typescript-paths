@@ -97,7 +97,7 @@ console.log(path_users_route().absolute(({"count": "20"})))
 
 ## Conventions
 
-* Query and Route Params must be provided as strings to the Typescript Functions
+* Query and Route Params must be provided as strings to the Typescript Functions if no requirement at the route is defined. Only digit requirements and either A or B requirements are supported.
 * All generated path functions in typescript will have a "path_" prefix.
 
 ### Executing Tests
