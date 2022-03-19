@@ -23,8 +23,18 @@ class GenerateTest extends TestCase
         $routeCollection = new RouteCollection();
         $routeCollection->add('user_route', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org', schemes: 'https'));
         $routeCollection->add('user_route_http', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org', schemes: 'http'));
-        $routeCollection->add('users_route', new Route('/users', host: 'app.development.org', schemes: 'https'));
-        $routeCollection->add('users_route', new Route(
+        $routeCollection->add('user_route_without_scheme', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org'));
+        $routeCollection->add('users_route_without_requirements_and_defaults', new Route('/users', host: 'app.development.org', schemes: 'https'));
+        $routeCollection->add('users_route_with_requirements', new Route(
+            path: '/users/{id}/{locale}',
+            requirements: [
+                'id' => '\d+',
+                'locale' => 'en|fr',
+            ],
+            host: 'app.development.org',
+            schemes: 'https'
+        ));
+        $routeCollection->add('users_route_with_requirements_and_defaults', new Route(
             path: '/users/{id}/{locale}',
             defaults: [
                 'locale' => 'en',

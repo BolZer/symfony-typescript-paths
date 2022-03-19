@@ -124,7 +124,19 @@ class GeneratorService
 
     private function retrieveVariablesFromAbsoluteRoutePath(Route $route): array
     {
-        $url = \sprintf('%s%s', $route->getHost(), $route->getPath());
+        $availableSchemes = $route->getSchemes();
+
+        $usedScheme = '{scheme}';
+
+        if (\in_array('http', $availableSchemes, true)) {
+            $usedScheme = 'http';
+        }
+
+        if (\in_array('https', $availableSchemes, true)) {
+            $usedScheme = 'https';
+        }
+
+        $url = \sprintf('%s://%s%s', $usedScheme, $route->getHost(), $route->getPath());
 
         $matches = [];
 
@@ -196,23 +208,7 @@ class GeneratorService
 
     private function createFunctionCallForAbsolutePath(Route $route, array $variables): string
     {
-        $availableSchemes = $route->getSchemes();
-
-        $usedScheme = null;
-
-        if (\in_array('http', $availableSchemes, true)) {
-            $usedScheme = 'http';
-        }
-
-        if (\in_array('https', $availableSchemes, true)) {
-            $usedScheme = 'https';
-        }
-
-        if ($usedScheme === null) {
-            throw new \InvalidArgumentException('Route must have https or http as scheme.');
-        }
-
-        $absolutePath = $usedScheme . '://' . $route->getHost() . $route->getPath();
+        $absolutePath = sprintf('%s://%s%s', $this->retrieveSchemeFromRoute($route), $route->getHost(), $route->getPath());
 
         if ($variables) {
             return \implode('', [
@@ -297,6 +293,23 @@ class GeneratorService
     private function getEitherAOrBRegexGuessRegex(): string
     {
         return '/([a-zA-Z]+)(?>\|)([a-zA-Z]+)/m';
+    }
+
+    private function retrieveSchemeFromRoute(Route $route): string
+    {
+        $availableSchemes = $route->getSchemes();
+
+        $usedScheme = '{scheme}';
+
+        if (\in_array('http', $availableSchemes, true)) {
+            $usedScheme = 'http';
+        }
+
+        if (\in_array('https', $availableSchemes, true)) {
+            $usedScheme = 'https';
+        }
+
+        return $usedScheme;
     }
 
     private function assertValidConfiguration(GeneratorConfig $config): void
