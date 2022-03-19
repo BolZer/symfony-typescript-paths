@@ -33,7 +33,7 @@ class GeneratorService
     private function getTypescriptUtilityFunctions(): array
     {
         return [
-            'const rRP = (rawRoute: string, routeParams: Record<string, string>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value)); return rawRoute;}',
+            'const rRP = (rawRoute: string, routeParams: Record<string, string|number>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value as string)); return rawRoute;}',
             'const aQP = (route: string, queryParams?: Record<string, string>): string => queryParams ? route + "?" + new URLSearchParams(queryParams).toString() : route;',
         ];
     }
@@ -52,7 +52,7 @@ class GeneratorService
         if ($config->isGenerateRelativeUrls()) {
             $buffer = array_merge($buffer, [
                 'relative: (',
-                $this->createRouteParamFunctionArgument($relativeRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $relativeRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 ') => string, ',
             ]);
@@ -61,7 +61,7 @@ class GeneratorService
         if ($config->isGenerateAbsoluteUrls()) {
             $buffer = array_merge($buffer, [
                 'absolute: (',
-                $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $absoluteRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 ') => string',
             ]);
@@ -75,7 +75,7 @@ class GeneratorService
         if ($config->isGenerateRelativeUrls()) {
             $buffer = array_merge($buffer, [
                 'relative: (',
-                $this->createRouteParamFunctionArgument($relativeRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $relativeRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 '): string => ' . $this->createFunctionCallForRelativePath($route, $relativeRouteVariables) . ', ',
             ]);
@@ -84,7 +84,7 @@ class GeneratorService
         if ($config->isGenerateAbsoluteUrls()) {
             $buffer = array_merge($buffer, [
                 'absolute: (',
-                $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $absoluteRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 '): string => ' . $this->createFunctionCallForAbsolutePath($route, $absoluteRouteVariables),
             ]);
@@ -159,15 +159,15 @@ class GeneratorService
         return 'path_' . preg_replace('/\W/', '_', $routeName);
     }
 
-    private function createRouteParamFunctionArgument(array $variables): string
+    private function createRouteParamFunctionArgument(Route $route, array $variables): string
     {
         if (!$variables) {
             return '';
         }
 
         return 'routeParams: {' . \implode(', ', array_map(
-            static function (string $variable) {
-                return $variable . ': string';
+            function (string $variable) use ($route) {
+                return sprintf('%s:%s', $variable, $this->guessTypeOfPathVariable($route, $variable));
             },
             $variables
         )) . '}, ';
@@ -236,6 +236,21 @@ class GeneratorService
             "', queryParams",
             ')',
         ]);
+    }
+
+    private function guessTypeOfPathVariable(Route $route, string $variable): string
+    {
+        $requirement = $route->getRequirement($variable);
+
+        if ($requirement === null) {
+            return 'string';
+        }
+
+        if ($requirement === '\d+') {
+            return 'number';
+        }
+
+        return 'string';
     }
 
     private function assertValidConfiguration(GeneratorConfig $config): void
