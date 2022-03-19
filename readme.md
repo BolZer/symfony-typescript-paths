@@ -59,7 +59,7 @@ class GenerationCommand extends Command
        // Typescript routes containing absolute urls.
        $routes = $this->generatorService->generate(GeneratorConfig::generateOnlyAbsoluteUrls());
        
-       // Typescript routes containing absolute urls.
+       // Typescript routes containing relative urls.
        $routes = $this->generatorService->generate(GeneratorConfig::generateOnlyRelativeUrls());
     
        file_put_contents(__DIR__ . '../../../paths.ts', implode("\n", $routes));
