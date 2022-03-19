@@ -64,7 +64,8 @@ class GenerationCommand extends Command
     
        file_put_contents(__DIR__ . '../../../paths.ts', implode("\n", $routes));
        $output->writeln('<comment>Generation of paths done.</comment>');
-       return 1;
+       
+       return Command::SUCCESS;
     }
 }
 ```
