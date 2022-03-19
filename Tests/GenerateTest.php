@@ -70,17 +70,6 @@ class GenerateTest extends TestCase
         );
     }
 
-    public function testGenerationServiceWithAInvalidRouteForAbsoluteUrlGeneration(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectDeprecationMessage('Route must have https or http as scheme.');
-
-        $routeCollection = new RouteCollection();
-        $routeCollection->add('user_route', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org'));
-
-        (new GeneratorService($this->getMockedRouter($routeCollection)))->generate(GeneratorConfig::generateOnlyAbsoluteUrls());
-    }
-
     public function testGenerationServiceWithAInvalidRouteForRelativeUrlGeneration(): void
     {
         $routeCollection = new RouteCollection();

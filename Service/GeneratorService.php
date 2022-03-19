@@ -33,8 +33,8 @@ class GeneratorService
     private function getTypescriptUtilityFunctions(): array
     {
         return [
-            'const rRP = (rawRoute: string, routeParams: Record<string, string|number>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value as string)); return rawRoute;}',
-            'const aQP = (route: string, queryParams?: Record<string, string>): string => queryParams ? route + "?" + new URLSearchParams(queryParams).toString() : route;',
+            'const replaceRouteParams = (rawRoute: string, routeParams: Record<string, string|number>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value as string)); return rawRoute;}',
+            'const appendQueryParams = (route: string, queryParams?: Record<string, string|number>): string => queryParams ? route + "?" + new URLSearchParams(queryParams as Record<string, string>).toString() : route;',
         ];
     }
 
@@ -189,8 +189,8 @@ class GeneratorService
     {
         if ($variables) {
             return \implode('', [
-                'aQP(',
-                "rRP('",
+                'appendQueryParams(',
+                "replaceRouteParams('",
                 $route->getPath(),
                 "', routeParams",
                 '), queryParams',
@@ -199,7 +199,7 @@ class GeneratorService
         }
 
         return \implode('', [
-            "aQP('",
+            "appendQueryParams('",
             $route->getPath(),
             "', queryParams",
             ')',
@@ -212,8 +212,8 @@ class GeneratorService
 
         if ($variables) {
             return \implode('', [
-                'aQP(',
-                "rRP('",
+                'appendQueryParams(',
+                "replaceRouteParams('",
                 $absolutePath,
                 "', routeParams",
                 '), queryParams',
@@ -222,7 +222,7 @@ class GeneratorService
         }
 
         return \implode('', [
-            "aQP('",
+            "appendQueryParams('",
             $absolutePath,
             "', queryParams",
             ')',
