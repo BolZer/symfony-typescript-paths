@@ -140,12 +140,7 @@ class GeneratorService
             return [];
         }
 
-        $buffer = [];
-        foreach ($matches as $match) {
-            $buffer[] = $match[1];
-        }
-
-        return $buffer;
+        return array_map(static fn (array $match) => $match[1], $matches);
     }
 
     private function sanitizeRouteFunctionName(string $routeName): string
@@ -246,11 +241,62 @@ class GeneratorService
             return 'string';
         }
 
-        if ($requirement === '\d+') {
+        if ($this->isDigitRegex($requirement)) {
             return 'number';
         }
 
+        if ($this->isEitherAOrBRegex($requirement)) {
+            return $this->deriveEitherAOrBRegexExpressionForTypescript($requirement);
+        }
+
         return 'string';
+    }
+
+    private function isDigitRegex(string $requirement): bool
+    {
+        return $requirement === '\d+';
+    }
+
+    private function isEitherAOrBRegex(string $requirement): bool
+    {
+        $matches = [];
+
+        preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
+
+        return count($matches) > 0;
+    }
+
+    private function deriveEitherAOrBRegexExpressionForTypescript(string $requirement): string
+    {
+        $matches = [];
+
+        preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
+
+        if (!$matches) {
+            throw new \LogicException('At this point the either A Or B regex must have matches');
+        }
+
+        $matchingGroup = $matches[0] ?? [];
+
+        if (!$matchingGroup) {
+            throw new \InvalidArgumentException('At this point the MatchingGroup must exist');
+        }
+
+        $buffer = [];
+        foreach ($matchingGroup as $key => $match) {
+            if ($key === 0) {
+                continue;
+            }
+
+            $buffer[] = $match;
+        }
+
+        return implode('|', array_map(static fn (string $matchFromBuffer) => sprintf("'%s'", $matchFromBuffer), $buffer));
+    }
+
+    private function getEitherAOrBRegexGuessRegex(): string
+    {
+        return '/([a-zA-Z]+)(?>\|)([a-zA-Z]+)/m';
     }
 
     private function assertValidConfiguration(GeneratorConfig $config): void
