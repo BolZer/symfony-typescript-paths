@@ -174,6 +174,10 @@ class GeneratorService
 
         return 'routeParams: {' . \implode(', ', array_map(
             function (string $variable) use ($route) {
+                if (array_key_exists($variable, $route->getDefaults())) {
+                    return sprintf('%s?:%s', $variable, $this->guessTypeOfPathVariable($route, $variable));
+                }
+
                 return sprintf('%s:%s', $variable, $this->guessTypeOfPathVariable($route, $variable));
             },
             $variables
@@ -192,7 +196,7 @@ class GeneratorService
                 'appendQueryParams(',
                 "replaceRouteParams('",
                 $route->getPath(),
-                "', routeParams",
+                sprintf("', %s", $this->createRouteParamsMergeExpressionForDefaults($route)),
                 '), queryParams',
                 ')',
             ]);
@@ -215,7 +219,7 @@ class GeneratorService
                 'appendQueryParams(',
                 "replaceRouteParams('",
                 $absolutePath,
-                "', routeParams",
+                sprintf("', %s", $this->createRouteParamsMergeExpressionForDefaults($route)),
                 '), queryParams',
                 ')',
             ]);
@@ -260,6 +264,15 @@ class GeneratorService
         preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
 
         return count($matches) > 0;
+    }
+
+    private function createRouteParamsMergeExpressionForDefaults(Route $route): string
+    {
+        if (!$route->getDefaults()) {
+            return '{...{}, ...routeParams}';
+        }
+
+        return sprintf('{...%s, ...routeParams}', json_encode($route->getDefaults(), JSON_THROW_ON_ERROR));
     }
 
     private function deriveEitherAOrBRegexExpressionForTypescript(string $requirement): string
