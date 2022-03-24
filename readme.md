@@ -1,5 +1,5 @@
 # Symfony-Typescript-Routes
-![maintained](https://img.shields.io/maintenance/yes/2021)
+![maintained](https://img.shields.io/maintenance/yes/2022)
 ![ci](https://travis-ci.com/BolZer/symfony-typescript-routes.svg?branch=master)
 [![codecov](https://codecov.io/gh/BolZer/symfony-typescript-routes/branch/master/graph/badge.svg?token=W7IYQXY2UD)](https://codecov.io/gh/BolZer/symfony-typescript-routes)
 
@@ -59,7 +59,7 @@ class GenerationCommand extends Command
        // Typescript routes containing absolute urls.
        $routes = $this->generatorService->generate(GeneratorConfig::generateOnlyAbsoluteUrls());
        
-       // Typescript routes containing relative urls.
+       // Typescript routes containing absolute urls.
        $routes = $this->generatorService->generate(GeneratorConfig::generateOnlyRelativeUrls());
     
        file_put_contents(__DIR__ . '../../../paths.ts', implode("\n", $routes));
