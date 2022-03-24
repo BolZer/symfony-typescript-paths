@@ -269,7 +269,7 @@ class GeneratorService
     private function createRouteParamsMergeExpressionForDefaults(Route $route): string
     {
         if (!$route->getDefaults()) {
-            return '{...{}, ...routeParams}';
+            return 'routeParams';
         }
 
         return sprintf('{...%s, ...routeParams}', json_encode($route->getDefaults(), JSON_THROW_ON_ERROR));
