@@ -33,8 +33,8 @@ class GeneratorService
     private function getTypescriptUtilityFunctions(): array
     {
         return [
-            'const rRP = (rawRoute: string, routeParams: Record<string, string>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value)); return rawRoute;}',
-            'const aQP = (route: string, queryParams?: Record<string, string>): string => queryParams ? route + "?" + new URLSearchParams(queryParams).toString() : route;',
+            'const replaceRouteParams = (rawRoute: string, routeParams: Record<string, string|number>): string => {Object.entries(routeParams).forEach(([key, value]) => rawRoute = rawRoute.replace(`{${key}}`, value as string)); return rawRoute;}',
+            'const appendQueryParams = (route: string, queryParams?: Record<string, string|number>): string => queryParams ? route + "?" + new URLSearchParams(queryParams as Record<string, string>).toString() : route;',
         ];
     }
 
@@ -52,7 +52,7 @@ class GeneratorService
         if ($config->isGenerateRelativeUrls()) {
             $buffer = array_merge($buffer, [
                 'relative: (',
-                $this->createRouteParamFunctionArgument($relativeRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $relativeRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 ') => string, ',
             ]);
@@ -61,7 +61,7 @@ class GeneratorService
         if ($config->isGenerateAbsoluteUrls()) {
             $buffer = array_merge($buffer, [
                 'absolute: (',
-                $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $absoluteRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 ') => string',
             ]);
@@ -75,7 +75,7 @@ class GeneratorService
         if ($config->isGenerateRelativeUrls()) {
             $buffer = array_merge($buffer, [
                 'relative: (',
-                $this->createRouteParamFunctionArgument($relativeRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $relativeRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 '): string => ' . $this->createFunctionCallForRelativePath($route, $relativeRouteVariables) . ', ',
             ]);
@@ -84,7 +84,7 @@ class GeneratorService
         if ($config->isGenerateAbsoluteUrls()) {
             $buffer = array_merge($buffer, [
                 'absolute: (',
-                $this->createRouteParamFunctionArgument($absoluteRouteVariables),
+                $this->createRouteParamFunctionArgument($route, $absoluteRouteVariables),
                 $this->createQueryParamFunctionArgument(),
                 '): string => ' . $this->createFunctionCallForAbsolutePath($route, $absoluteRouteVariables),
             ]);
@@ -124,7 +124,19 @@ class GeneratorService
 
     private function retrieveVariablesFromAbsoluteRoutePath(Route $route): array
     {
-        $url = \sprintf('%s%s', $route->getHost(), $route->getPath());
+        $availableSchemes = $route->getSchemes();
+
+        $usedScheme = '{scheme}';
+
+        if (\in_array('http', $availableSchemes, true)) {
+            $usedScheme = 'http';
+        }
+
+        if (\in_array('https', $availableSchemes, true)) {
+            $usedScheme = 'https';
+        }
+
+        $url = \sprintf('%s://%s%s', $usedScheme, $route->getHost(), $route->getPath());
 
         $matches = [];
 
@@ -140,12 +152,7 @@ class GeneratorService
             return [];
         }
 
-        $buffer = [];
-        foreach ($matches as $match) {
-            $buffer[] = $match[1];
-        }
-
-        return $buffer;
+        return array_map(static fn (array $match) => $match[1], $matches);
     }
 
     private function sanitizeRouteFunctionName(string $routeName): string
@@ -159,15 +166,19 @@ class GeneratorService
         return 'path_' . preg_replace('/\W/', '_', $routeName);
     }
 
-    private function createRouteParamFunctionArgument(array $variables): string
+    private function createRouteParamFunctionArgument(Route $route, array $variables): string
     {
         if (!$variables) {
             return '';
         }
 
         return 'routeParams: {' . \implode(', ', array_map(
-            static function (string $variable) {
-                return $variable . ': string';
+            function (string $variable) use ($route) {
+                if (array_key_exists($variable, $route->getDefaults())) {
+                    return sprintf('%s?:%s', $variable, $this->guessTypeOfPathVariable($route, $variable));
+                }
+
+                return sprintf('%s:%s', $variable, $this->guessTypeOfPathVariable($route, $variable));
             },
             $variables
         )) . '}, ';
@@ -182,17 +193,17 @@ class GeneratorService
     {
         if ($variables) {
             return \implode('', [
-                'aQP(',
-                "rRP('",
+                'appendQueryParams(',
+                "replaceRouteParams('",
                 $route->getPath(),
-                "', routeParams",
+                sprintf("', %s", $this->createRouteParamsMergeExpressionForDefaults($route)),
                 '), queryParams',
                 ')',
             ]);
         }
 
         return \implode('', [
-            "aQP('",
+            "appendQueryParams('",
             $route->getPath(),
             "', queryParams",
             ')',
@@ -201,9 +212,107 @@ class GeneratorService
 
     private function createFunctionCallForAbsolutePath(Route $route, array $variables): string
     {
+        $absolutePath = sprintf('%s://%s%s', $this->retrieveSchemeFromRoute($route), $route->getHost(), $route->getPath());
+
+        if ($variables) {
+            return \implode('', [
+                'appendQueryParams(',
+                "replaceRouteParams('",
+                $absolutePath,
+                sprintf("', %s", $this->createRouteParamsMergeExpressionForDefaults($route)),
+                '), queryParams',
+                ')',
+            ]);
+        }
+
+        return \implode('', [
+            "appendQueryParams('",
+            $absolutePath,
+            "', queryParams",
+            ')',
+        ]);
+    }
+
+    private function guessTypeOfPathVariable(Route $route, string $variable): string
+    {
+        $requirement = $route->getRequirement($variable);
+
+        if ($requirement === null) {
+            return 'string';
+        }
+
+        if ($this->isDigitRegex($requirement)) {
+            return 'number';
+        }
+
+        if ($this->isEitherAOrBRegex($requirement)) {
+            return $this->deriveEitherAOrBRegexExpressionForTypescript($requirement);
+        }
+
+        return 'string';
+    }
+
+    private function isDigitRegex(string $requirement): bool
+    {
+        return $requirement === '\d+';
+    }
+
+    private function isEitherAOrBRegex(string $requirement): bool
+    {
+        $matches = [];
+
+        preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
+
+        return count($matches) > 0;
+    }
+
+    private function createRouteParamsMergeExpressionForDefaults(Route $route): string
+    {
+        if (!$route->getDefaults()) {
+            return 'routeParams';
+        }
+
+        return sprintf('{...%s, ...routeParams}', json_encode($route->getDefaults(), JSON_THROW_ON_ERROR));
+    }
+
+    private function deriveEitherAOrBRegexExpressionForTypescript(string $requirement): string
+    {
+        $matches = [];
+
+        preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
+
+        if (!$matches) {
+            throw new \LogicException('At this point the either A Or B regex must have matches');
+        }
+
+        $matchingGroup = $matches[0] ?? [];
+
+        if (!$matchingGroup) {
+            throw new \InvalidArgumentException('At this point the MatchingGroup must exist');
+        }
+
+        $buffer = [];
+        foreach ($matchingGroup as $key => $match) {
+            if ($key === 0) {
+                continue;
+            }
+
+            $buffer[] = $match;
+        }
+
+        return implode('|', array_map(static fn (string $matchFromBuffer) => sprintf("'%s'", $matchFromBuffer), $buffer));
+    }
+
+    private function getEitherAOrBRegexGuessRegex(): string
+    {
+        return '/([a-zA-Z]+)(?>\|)([a-zA-Z]+)/m';
+    }
+
+    private function retrieveSchemeFromRoute(Route $route): string
+    {
         $availableSchemes = $route->getSchemes();
 
-        $usedScheme = null;
+        $usedScheme = '{scheme}';
 
         if (\in_array('http', $availableSchemes, true)) {
             $usedScheme = 'http';
@@ -213,29 +322,7 @@ class GeneratorService
             $usedScheme = 'https';
         }
 
-        if ($usedScheme === null) {
-            throw new \InvalidArgumentException('Route must have https or http as scheme.');
-        }
-
-        $absolutePath = $usedScheme . '://' . $route->getHost() . $route->getPath();
-
-        if ($variables) {
-            return \implode('', [
-                'aQP(',
-                "rRP('",
-                $absolutePath,
-                "', routeParams",
-                '), queryParams',
-                ')',
-            ]);
-        }
-
-        return \implode('', [
-            "aQP('",
-            $absolutePath,
-            "', queryParams",
-            ')',
-        ]);
+        return $usedScheme;
     }
 
     private function assertValidConfiguration(GeneratorConfig $config): void

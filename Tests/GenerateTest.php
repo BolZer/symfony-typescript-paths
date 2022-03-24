@@ -16,14 +16,36 @@ class GenerateTest extends TestCase
 {
     use ProphecyTrait;
 
-    private const UPDATE_OUTPUT_FILES = true;
+    private const UPDATE_OUTPUT_FILES = false;
 
     public function generationServiceDataProvider(): \Generator
     {
         $routeCollection = new RouteCollection();
         $routeCollection->add('user_route', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org', schemes: 'https'));
         $routeCollection->add('user_route_http', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org', schemes: 'http'));
-        $routeCollection->add('users_route', new Route('/users', host: 'app.development.org', schemes: 'https'));
+        $routeCollection->add('user_route_without_scheme', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org'));
+        $routeCollection->add('users_route_without_requirements_and_defaults', new Route('/users', host: 'app.development.org', schemes: 'https'));
+        $routeCollection->add('users_route_with_requirements', new Route(
+            path: '/users/{id}/{locale}',
+            requirements: [
+                'id' => '\d+',
+                'locale' => 'en|fr',
+            ],
+            host: 'app.development.org',
+            schemes: 'https'
+        ));
+        $routeCollection->add('users_route_with_requirements_and_defaults', new Route(
+            path: '/users/{id}/{locale}',
+            defaults: [
+                'locale' => 'en',
+            ],
+            requirements: [
+                'id' => '\d+',
+                'locale' => 'en|fr',
+            ],
+            host: 'app.development.org',
+            schemes: 'https'
+        ));
 
         yield ['output.ts', $routeCollection, GeneratorConfig::generateEverything()];
         yield ['output_relative.ts', $routeCollection, GeneratorConfig::generateOnlyRelativeUrls()];
@@ -38,7 +60,7 @@ class GenerateTest extends TestCase
         $service = new GeneratorService($this->getMockedRouter($collection));
         $result = implode("\n", $service->generate($config));
 
-        if (true) {
+        if (self::UPDATE_OUTPUT_FILES) {
             \file_put_contents($file, $result);
         }
 
@@ -46,17 +68,6 @@ class GenerateTest extends TestCase
             $file,
             $result
         );
-    }
-
-    public function testGenerationServiceWithAInvalidRouteForAbsoluteUrlGeneration(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectDeprecationMessage('Route must have https or http as scheme.');
-
-        $routeCollection = new RouteCollection();
-        $routeCollection->add('user_route', new Route('/user/{id}/notes/{noteId}', host: 'app.development.org'));
-
-        (new GeneratorService($this->getMockedRouter($routeCollection)))->generate(GeneratorConfig::generateOnlyAbsoluteUrls());
     }
 
     public function testGenerationServiceWithAInvalidRouteForRelativeUrlGeneration(): void

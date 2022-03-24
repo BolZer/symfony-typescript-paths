@@ -10,7 +10,6 @@ test('test path_user_route absolute route', () => {
 
 test('test specific generation of only absolute routes', () => {
     const routeObject = path_user_route();
-
     expect(routeObject).toHaveProperty("absolute");
     expect(routeObject).not.toHaveProperty("relative");
     expect(Object.keys(routeObject).length).toBe(1)
