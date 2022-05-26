@@ -8,6 +8,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "lib": ["ES2017", "DOM"],
+    "strict": true,
     "noEmit": true
   }
 }
