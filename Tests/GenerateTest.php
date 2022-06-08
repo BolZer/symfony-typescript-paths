@@ -46,6 +46,18 @@ class GenerateTest extends TestCase
             host: 'app.development.org',
             schemes: 'https'
         ));
+        $routeCollection->add('users_route_with_requirements_and_null_defaults', new Route(
+            path: '/users/{id}/{locale}',
+            defaults: [
+                'locale' => null,
+            ],
+            requirements: [
+                'id' => '\d+',
+                'locale' => 'en|fr',
+            ],
+            host: 'app.development.org',
+            schemes: 'https'
+        ));
 
         yield ['output.ts', $routeCollection, GeneratorConfig::generateEverything()];
         yield ['output_relative.ts', $routeCollection, GeneratorConfig::generateOnlyRelativeUrls()];
