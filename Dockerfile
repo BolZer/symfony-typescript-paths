@@ -1,4 +1,4 @@
-FROM php:8-cli
+FROM php:8.1-cli
 
 # PHP ENV
 RUN apt-get update && apt-get install -y curl git libzip-dev zip sudo \
