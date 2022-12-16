@@ -16,7 +16,7 @@ class GenerateTest extends TestCase
 {
     use ProphecyTrait;
 
-    private const UPDATE_OUTPUT_FILES = true;
+    private const UPDATE_OUTPUT_FILES = false;
 
     public function generationServiceDataProvider(): \Generator
     {
