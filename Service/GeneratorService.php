@@ -241,29 +241,25 @@ class GeneratorService
             return 'string';
         }
 
-        if ($this->isDigitRegex($requirement)) {
+        if ($this->isDigitRequirement($requirement)) {
             return 'number';
         }
 
-        if ($this->isEitherAOrBRegex($requirement)) {
-            return $this->deriveEitherAOrBRegexExpressionForTypescript($requirement);
+        if ($this->isUnionRequirement($requirement)) {
+            return $this->deriveUnionExpressionForTypescript($requirement);
         }
 
         return 'string';
     }
 
-    private function isDigitRegex(string $requirement): bool
+    private function isDigitRequirement(string $requirement): bool
     {
         return $requirement === '\d+';
     }
 
-    private function isEitherAOrBRegex(string $requirement): bool
+    private function isUnionRequirement(string $requirement): bool
     {
-        $matches = [];
-
-        preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
-
-        return count($matches) > 0;
+        return str_contains($requirement, '|');
     }
 
     private function createRouteParamsMergeExpressionForDefaults(Route $route): string
@@ -275,37 +271,15 @@ class GeneratorService
         return sprintf('{...%s, ...routeParams}', json_encode($route->getDefaults(), JSON_THROW_ON_ERROR));
     }
 
-    private function deriveEitherAOrBRegexExpressionForTypescript(string $requirement): string
+    private function deriveUnionExpressionForTypescript(string $requirement): string
     {
-        $matches = [];
+        $matches = explode('|', $requirement);
 
-        preg_match_all($this->getEitherAOrBRegexGuessRegex(), $requirement, $matches, PREG_SET_ORDER);
-
-        if (!$matches) {
-            throw new \LogicException('At this point the either A Or B regex must have matches');
+        if (count($matches) < 2) {
+            throw new \LogicException('At this point union parts must be greater than 2!');
         }
 
-        $matchingGroup = $matches[0] ?? [];
-
-        if (!$matchingGroup) {
-            throw new \InvalidArgumentException('At this point the MatchingGroup must exist');
-        }
-
-        $buffer = [];
-        foreach ($matchingGroup as $key => $match) {
-            if ($key === 0) {
-                continue;
-            }
-
-            $buffer[] = $match;
-        }
-
-        return implode('|', array_map(static fn (string $matchFromBuffer) => sprintf("'%s'", $matchFromBuffer), $buffer));
-    }
-
-    private function getEitherAOrBRegexGuessRegex(): string
-    {
-        return '/([a-zA-Z]+)(?>\|)([a-zA-Z]+)/m';
+        return implode('|', array_map(static fn (string $matchFromBuffer) => sprintf("'%s'", $matchFromBuffer), $matches));
     }
 
     private function retrieveSchemeFromRoute(Route $route): string

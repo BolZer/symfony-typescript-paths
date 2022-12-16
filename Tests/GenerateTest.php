@@ -58,6 +58,14 @@ class GenerateTest extends TestCase
             host: 'app.development.org',
             schemes: 'https'
         ));
+        $routeCollection->add('generate_route_with_long_requirement_as_union', new Route(
+            path: '/generate/{intent}/{documents}',
+            requirements: [
+                'intent' => 'new_email|email|print|printdebug|preview|preview_data|preview_text|gct.legalize'
+            ],
+            host: 'app.development.org',
+            schemes: 'https'
+        ));
 
         yield ['output.ts', $routeCollection, GeneratorConfig::generateEverything()];
         yield ['output_relative.ts', $routeCollection, GeneratorConfig::generateOnlyRelativeUrls()];
