@@ -16,7 +16,7 @@ class GenerateTest extends TestCase
 {
     use ProphecyTrait;
 
-    private const UPDATE_OUTPUT_FILES = false;
+    private const UPDATE_OUTPUT_FILES = true;
 
     public function generationServiceDataProvider(): \Generator
     {
@@ -54,6 +54,14 @@ class GenerateTest extends TestCase
             requirements: [
                 'id' => '\d+',
                 'locale' => 'en|fr',
+            ],
+            host: 'app.development.org',
+            schemes: 'https'
+        ));
+        $routeCollection->add('issue_12', new Route(
+            path: '/generate/{intent}/{documents}',
+            requirements: [
+                'intent' => 'new_email|email|print|printdebug|preview|preview_data|preview_text|gct.legalize'
             ],
             host: 'app.development.org',
             schemes: 'https'
