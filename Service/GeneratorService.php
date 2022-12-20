@@ -11,7 +11,7 @@ use Symfony\Component\Routing\RouterInterface;
 class GeneratorService
 {
     public function __construct(
-        private RouterInterface $router,
+        private readonly RouterInterface $router,
     ) {
     }
 
@@ -262,6 +262,11 @@ class GeneratorService
         return str_contains($requirement, '|');
     }
 
+    private function isPhpRegexExpression(string $requirement): bool
+    {
+        return str_starts_with($requirement, '\\');
+    }
+
     private function createRouteParamsMergeExpressionForDefaults(Route $route): string
     {
         if (!$route->getDefaults()) {
@@ -279,7 +284,25 @@ class GeneratorService
             throw new \LogicException('At this point union parts must be greater than 2!');
         }
 
-        return implode('|', array_map(static fn (string $matchFromBuffer) => sprintf("'%s'", $matchFromBuffer), $matches));
+        $transformedMatches = array_map(function ($match) {
+            if ($this->isDigitRequirement($match)) {
+                return 'number';
+            }
+
+            if ($this->isPhpRegexExpression($match)) {
+                return 'string';
+            }
+
+            return $match;
+        }, $matches);
+
+        return implode('|', array_map(function (string $matchFromBuffer) {
+            if ($matchFromBuffer === 'string' || $matchFromBuffer === 'number') {
+                return sprintf('%s', $matchFromBuffer);
+            }
+
+            return sprintf("'%s'", $matchFromBuffer);
+        }, $transformedMatches));
     }
 
     private function retrieveSchemeFromRoute(Route $route): string
