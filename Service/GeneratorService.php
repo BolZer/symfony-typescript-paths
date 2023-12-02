@@ -8,10 +8,10 @@ use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 
-class GeneratorService
+final readonly class GeneratorService
 {
     public function __construct(
-        private readonly RouterInterface $router,
+        private RouterInterface $router,
     ) {
     }
 
