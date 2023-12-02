@@ -15,6 +15,7 @@ class GeneratorService
     ) {
     }
 
+    /** @return array<string> */
     public function generate(GeneratorConfig $config): array
     {
         $this->assertValidConfiguration($config);
@@ -30,6 +31,7 @@ class GeneratorService
         return $buffer;
     }
 
+    /** @return array<string> */
     private function getTypescriptUtilityFunctions(): array
     {
         return [
@@ -98,6 +100,7 @@ class GeneratorService
         return \implode('', $buffer);
     }
 
+    /** @return array<string> */
     private function retrieveVariablesFromRoutePath(Route $route): array
     {
         $matches = [];
@@ -122,6 +125,7 @@ class GeneratorService
         return $buffer;
     }
 
+    /** @return array<string> */
     private function retrieveVariablesFromAbsoluteRoutePath(Route $route): array
     {
         $availableSchemes = $route->getSchemes();
