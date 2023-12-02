@@ -12,8 +12,7 @@ final readonly class GeneratorService
 {
     public function __construct(
         private RouterInterface $router,
-    ) {
-    }
+    ) {}
 
     /** @return array<string> */
     public function generate(GeneratorConfig $config): array

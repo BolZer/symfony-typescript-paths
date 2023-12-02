@@ -9,8 +9,7 @@ final readonly class GeneratorConfig
     private function __construct(
         private bool $generateAbsoluteUrls,
         private bool $generateRelativeUrls,
-    ) {
-    }
+    ) {}
 
     public static function generateOnlyRelativeUrls(): self
     {
