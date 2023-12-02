@@ -1,0 +1,28 @@
+name: Codestyle
+
+on: [ pull_request ]
+
+concurrency:
+  group: codestyle-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Install composer dependencies
+        run: composer install
+
+      - name: Check codestyle
+        run: PHP_CS_FIXER_IGNORE_ENV=true vendor/bin/php-cs-fixer fix ./ --dry-run
