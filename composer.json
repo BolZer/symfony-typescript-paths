@@ -25,11 +25,11 @@
   ,
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.8",
-    "phpspec/prophecy": "^1.15.0",
+    "phpspec/prophecy": "1.17.0",
     "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^9.5.20",
     "roave/security-advisories": "dev-latest",
-    "vimeo/psalm": "^4.23"
+    "vimeo/psalm": "5.16.0"
   },
   "config": {
     "sort-packages": true,
