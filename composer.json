@@ -14,27 +14,27 @@
     }
   },
   "require": {
-    "php": ">=8.1",
-    "symfony/config": "^v6.1",
-    "symfony/dependency-injection": "^v6.1",
-    "symfony/http-kernel": "^v6.1",
-    "symfony/routing": "^v6.1",
-    "symfony/validator": "^v6.1",
-    "symfony/yaml": "^v6.1"
+    "php": ">=8.2",
+    "symfony/config": "^v7.0",
+    "symfony/dependency-injection": "^v7.0",
+    "symfony/http-kernel": "^v7.0",
+    "symfony/routing": "^v7.0",
+    "symfony/validator": "^v7.0",
+    "symfony/yaml": "^v7.0"
   }
   ,
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.8",
-    "phpspec/prophecy": "^1.15.0",
+    "friendsofphp/php-cs-fixer": "v3.40.0",
+    "phpspec/prophecy": "1.17.0",
     "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^9.5.20",
     "roave/security-advisories": "dev-latest",
-    "vimeo/psalm": "^4.23"
+    "vimeo/psalm": "5.16.0"
   },
   "config": {
     "sort-packages": true,
     "platform": {
-      "php": "8.1"
+      "php": "8.2"
     }
   }
 }

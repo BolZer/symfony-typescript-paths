@@ -1,0 +1,25 @@
+name: Tests (PHPUnit & Jest)
+
+on: [ pull_request ]
+
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests in docker
+        run: timeout 300 docker compose --project-name easycli-${{ github.event.pull_request.number }} -f docker-compose.yaml up
+
+      - name: Fetch logs from docker
+        run: timeout 300 docker compose --project-name easycli-${{ github.event.pull_request.number }} -f docker-compose.yaml logs
+
+      - name: Bring down running docker
+        run: timeout 300 docker compose --project-name easycli-${{ github.event.pull_request.number }} -f docker-compose.yaml down

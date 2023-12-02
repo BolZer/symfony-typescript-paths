@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Bolzer\SymfonyTypescriptRoutes\Dto;
 
-class GeneratorConfig
+final readonly class GeneratorConfig
 {
     private function __construct(
         private bool $generateAbsoluteUrls,
         private bool $generateRelativeUrls,
-    ) {
-    }
+    ) {}
 
     public static function generateOnlyRelativeUrls(): self
     {
