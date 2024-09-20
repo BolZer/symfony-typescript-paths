@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bolzer\SymfonyTypescriptRoutes\Dto;
+namespace Bolzer\SymfonyTypescriptRoutes\src\Dto;
 
 final readonly class GeneratorConfig
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bolzer\SymfonyTypescriptRoutes\Bundle;
+namespace Bolzer\SymfonyTypescriptRoutes\src\Bundle;
 
-use Bolzer\SymfonyTypescriptRoutes\Extension\TypescriptPathExtension;
+use Bolzer\SymfonyTypescriptRoutes\src\Extension\TypescriptPathExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bolzer\SymfonyTypescriptRoutes\Tests;
+namespace Bolzer\SymfonyTypescriptRoutes\src\Tests;
 
-use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
-use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
+use Bolzer\SymfonyTypescriptRoutes\src\Dto\GeneratorConfig;
+use Bolzer\SymfonyTypescriptRoutes\src\Service\GeneratorService;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\Routing\Route;

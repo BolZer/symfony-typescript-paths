@@ -1,5 +1,5 @@
 # Symfony-Typescript-Routes
-![maintained](https://img.shields.io/maintenance/yes/2022)
+![maintained](https://img.shields.io/maintenance/yes/2024)
 [![codecov](https://codecov.io/gh/BolZer/symfony-typescript-routes/branch/master/graph/badge.svg?token=W7IYQXY2UD)](https://codecov.io/gh/BolZer/symfony-typescript-routes)
 
 ## Description
@@ -17,27 +17,25 @@ composer require bolzer/symfony-typescript-routes
 ## Example
 
 1. Registering the Extension
+
 ```PHP
 // bundles.php
 <?php
 
 return [
-    Bolzer\SymfonyTypescriptRoutes\Bundle\TypescriptPathBundle::class => ['all' => true],
+    \Bolzer\SymfonyTypescriptRoutes\src\Bundle\TypescriptPathBundle::class => ['all' => true],
 ];
 
 ```
 
 
 2. Write something to create a path.ts file with the content from the service. Like a Command!
+
 ```PHP
 // some_command.php
 <?php
 
-use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
+use Bolzer\SymfonyTypescriptRoutes\src\Dto\GeneratorConfig;use Bolzer\SymfonyTypescriptRoutes\src\Service\GeneratorService;use Symfony\Component\Console\Command\Command;use Symfony\Component\Console\Input\InputInterface;use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerationCommand extends Command
 {
