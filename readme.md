@@ -1,5 +1,5 @@
 # Symfony-Typescript-Routes
-![maintained](https://img.shields.io/maintenance/yes/2022)
+![maintained](https://img.shields.io/maintenance/yes/2024)
 [![codecov](https://codecov.io/gh/BolZer/symfony-typescript-routes/branch/master/graph/badge.svg?token=W7IYQXY2UD)](https://codecov.io/gh/BolZer/symfony-typescript-routes)
 
 ## Description
