@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bolzer\SymfonyTypescriptRoutes\src\Extension;
+namespace Bolzer\SymfonyTypescriptRoutes\Extension;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

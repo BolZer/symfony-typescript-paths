@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bolzer\SymfonyTypescriptRoutes\src\Tests;
+namespace Bolzer\SymfonyTypescriptRoutesTests;
 
-use Bolzer\SymfonyTypescriptRoutes\src\Dto\GeneratorConfig;
-use Bolzer\SymfonyTypescriptRoutes\src\Service\GeneratorService;
+use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
+use Bolzer\SymfonyTypescriptRoutes\Service\GeneratorService;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\Routing\Route;
@@ -83,7 +83,7 @@ class GenerateTest extends TestCase
     /** @dataProvider generationServiceDataProvider */
     public function testGenerationService(string $outputFileName, RouteCollection $collection, GeneratorConfig $config): void
     {
-        $file = __DIR__ . '/' . $outputFileName;
+        $file = __DIR__ . 'GenerateTest.php/' . $outputFileName;
 
         $service = new GeneratorService($this->getMockedRouter($collection));
         $result = implode("\n", $service->generate($config));

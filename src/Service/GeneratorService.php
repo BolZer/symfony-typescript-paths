@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bolzer\SymfonyTypescriptRoutes\src\Service;
+namespace Bolzer\SymfonyTypescriptRoutes\Service;
 
-use Bolzer\SymfonyTypescriptRoutes\src\Dto\GeneratorConfig;
+use Bolzer\SymfonyTypescriptRoutes\Dto\GeneratorConfig;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 

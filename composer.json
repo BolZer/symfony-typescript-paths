@@ -10,7 +10,12 @@
   ],
   "autoload": {
     "psr-4": {
-      "Bolzer\\SymfonyTypescriptRoutes\\": ""
+      "Bolzer\\SymfonyTypescriptRoutes\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Bolzer\\SymfonyTypescriptRoutesTests\\": "tests"
     }
   },
   "require": {
